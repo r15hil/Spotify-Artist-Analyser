@@ -2,6 +2,13 @@
 
 {% block content %}
 
+<form action= '.' method='POST'> {% csrf_token %}
+    <form>
+        {{ form.as_p }}
+        <input type='submit' value='Search' />
+    </form>
+
+
 <h1>Artist Page</h1>
 <p>Danceability: {{ danceability }}</p>
 <p>Energy: {{ energy }}</p>

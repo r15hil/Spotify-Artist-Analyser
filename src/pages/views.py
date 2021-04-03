@@ -2,6 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import requests
 import pandas as pd
+from .forms import RawForm
 
 CLIENT_ID = 'aac7a18b013842f58bb165716c697add'
 CLIENT_SECRET = '150614d1fbdb425a86238147e6f9e20b'
@@ -17,12 +18,15 @@ def home_view(request, *args, **kwargs):
 
 
 def contact_view(request, *args, **kwargs):
-    # my_context = {
-    #     "my_text": "This is about how to contact us",
-    #     "my_number" : 123,
-    #     "my_list" : [123,321,789,987]
-    # }
-    # POST
+
+    form = RawForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        print(form.cleaned_data['artistID'])
+        track_id = form.cleaned_data['artistID']
+    else:
+        track_id = '6y0igZArWVi6Iz0rj35c1Y' 
+
     auth_response = requests.post(AUTH_URL, {
         'grant_type': 'client_credentials',
         'client_id': CLIENT_ID,
@@ -42,24 +46,13 @@ def contact_view(request, *args, **kwargs):
     # base URL of all Spotify API endpoints
     BASE_URL = 'https://api.spotify.com/v1/'
 
-    # Track ID from the URI
-    track_id = '6y0igZArWVi6Iz0rj35c1Y'
-
-    # actual GET request with proper header
-    r = requests.get(BASE_URL + 'audio-features/' + track_id, headers=headers)
-
-    # base URL of all Spotify API endpoints
-    BASE_URL = 'https://api.spotify.com/v1/'
-
-    # Track ID from the URI
-    track_id = '1fewSx2d5KIZ04wsooEBOz'
-
     # actual GET request with proper header
     r = requests.get(BASE_URL + 'audio-features/' + track_id, headers=headers)
 
     r = r.json()
     
     context = {
+        'form' : form,
         'object': r
     }
 
@@ -69,6 +62,11 @@ def contact_view(request, *args, **kwargs):
 
 
 def artist_view(request, *args, **kwargs):
+
+    form = RawForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        print(form.cleaned_data['artistID'])
 
     auth_response = requests.post(AUTH_URL, {
         'grant_type': 'client_credentials',
@@ -94,7 +92,7 @@ def artist_view(request, *args, **kwargs):
     # pull all artists albums
     r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums', 
                     headers=headers, 
-                    params={'include_groups': 'album', 'limit': 10})
+                    params={'include_groups': 'album', 'limit': 2})
     d = r.json()
 
     data = []   # will hold all track info
@@ -135,6 +133,7 @@ def artist_view(request, *args, **kwargs):
     print(df.head())
 
     context = {
+        "form" : form,
         "danceability": df['danceability'].mean(),
         "loudness": df['loudness'].mean(),
         "energy": df['energy'].mean(),

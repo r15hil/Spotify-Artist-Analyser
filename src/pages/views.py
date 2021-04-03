@@ -67,6 +67,9 @@ def artist_view(request, *args, **kwargs):
     if form.is_valid():
         form.save()
         print(form.cleaned_data['artistID'])
+        artist_id = form.cleaned_data['artistID']
+    else:
+        artist_id = '36QJpDe2go2KgaRleHCDTp'
 
     auth_response = requests.post(AUTH_URL, {
         'grant_type': 'client_credentials',
@@ -87,15 +90,18 @@ def artist_view(request, *args, **kwargs):
     # base URL of all Spotify API endpoints
     BASE_URL = 'https://api.spotify.com/v1/'
     
-    artist_id = '36QJpDe2go2KgaRleHCDTp'
+    #artist_id = '36QJpDe2go2KgaRleHCDTp'
 
     # pull all artists albums
     r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums', 
                     headers=headers, 
-                    params={'include_groups': 'album', 'limit': 2})
+                    params={'include_groups': 'album', 'limit': 20})
     d = r.json()
 
-    data = []   # will hold all track info
+    for album in d['items']:
+        #print(album['name'], ' --- ', album['release_date'])
+        data = []   # will hold all track info
+
     albums = [] # to keep track of duplicates
 
     # loop over albums and get all tracks
@@ -108,8 +114,13 @@ def artist_view(request, *args, **kwargs):
             continue
         albums.append(trim_name.upper()) # use upper() to standardize
         
+        # this takes a few seconds so let's keep track of progress    
+        #print(album_name)
+        
         # pull all tracks from this album
-        r = requests.get(BASE_URL + 'albums/' + album['id'] + '/tracks', headers=headers)
+        r = requests.get(BASE_URL + 'albums/' + album['id'] + '/tracks', 
+            headers=headers)
+        
         tracks = r.json()['items']
         
         for track in tracks:
@@ -128,7 +139,6 @@ def artist_view(request, *args, **kwargs):
             })
             
             data.append(f)
-
     df = pd.DataFrame(data)
     print(df.head())
 

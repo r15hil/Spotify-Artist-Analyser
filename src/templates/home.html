@@ -3,6 +3,13 @@
 {% block content %}
 
 <h1>Home Page</h1>
+
+<form action= '/artist/' method='POST'> {% csrf_token %}
+    <form>
+        {{ form.as_p }}
+        <input type='submit' value='Search' />
+    </form>
+
 <p>{{ request.user }}</p>
 <p>{{ request.user.is_authenticated }}</p>
 <p>This is a template</p>

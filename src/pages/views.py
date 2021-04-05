@@ -13,7 +13,18 @@ AUTH_URL = 'https://accounts.spotify.com/api/token'
 # Create your views here.
 
 def home_view(request, *args, **kwargs):
-    return render(request, "home.html", {})
+
+    form = RawForm(request.POST or None)
+    if form.is_valid():
+        form.save()
+        print(form.cleaned_data['artistID'])
+        track_id = form.cleaned_data['artistID']
+
+    context = {
+        "form" : form
+    }
+    
+    return render(request, "home.html", context)
 
 
 
@@ -67,7 +78,8 @@ def artist_view(request, *args, **kwargs):
     if form.is_valid():
         form.save()
         print(form.cleaned_data['artistID'])
-        artist_id = form.cleaned_data['artistID']
+        #artist_id = form.cleaned_data['artistID']
+        artist_id = '36QJpDe2go2KgaRleHCDTp'
     else:
         artist_id = '36QJpDe2go2KgaRleHCDTp'
 

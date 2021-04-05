@@ -10,8 +10,14 @@
 
 
 <h1>Artist Page</h1>
-<p>Danceability: {{ danceability }}</p>
-<p>Energy: {{ energy }}</p>
-<p>Loudness: {{ loudness }}</p>
+<ul>
+    {% for artist in artists %}
+    <li>{{ artist.name }}</li>
+    <!-- <a href={{ artist.images.2.url }} target="_blank"> -->
+        <img src= {{ artist.images.2.url }} alt={{ artist.name }}>
+    <!-- </a> -->
+    {% endfor %}
+
+</ul>
 
 {% endblock %}

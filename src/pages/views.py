@@ -79,7 +79,7 @@ def artist_view(request, *args, **kwargs):
         form.save()
         print(form.cleaned_data['artistID'])
         #artist_id = form.cleaned_data['artistID']
-        artist_id = '36QJpDe2go2KgaRleHCDTp'
+        artist_id = form.cleaned_data['artistID']
     else:
         artist_id = '36QJpDe2go2KgaRleHCDTp'
 
@@ -103,62 +103,20 @@ def artist_view(request, *args, **kwargs):
     BASE_URL = 'https://api.spotify.com/v1/'
     
     #artist_id = '36QJpDe2go2KgaRleHCDTp'
+    print("before: ", artist_id)
+    artist_id = artist_id.replace(" ", "%20")
+    print("after: ", artist_id)
 
-    # pull all artists albums
-    r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums', 
+    r = requests.get(BASE_URL + 'search?q=/' + artist_id + '&type=artist', 
                     headers=headers, 
-                    params={'include_groups': 'album', 'limit': 10})
+                    params={'include_groups': 'artist', 'limit': 5})
     d = r.json()
-
-    for album in d['items']:
-        #print(album['name'], ' --- ', album['release_date'])
-        data = []   # will hold all track info
-
-    albums = [] # to keep track of duplicates
-
-    # loop over albums and get all tracks
-    for album in d['items']:
-        album_name = album['name']
-
-        # here's a hacky way to skip over albums we've already grabbed
-        trim_name = album_name.split('(')[0].strip()
-        if trim_name.upper() in albums or int(album['release_date'][:4]) > 1983:
-            continue
-        albums.append(trim_name.upper()) # use upper() to standardize
-        
-        # this takes a few seconds so let's keep track of progress    
-        #print(album_name)
-        
-        # pull all tracks from this album
-        r = requests.get(BASE_URL + 'albums/' + album['id'] + '/tracks', 
-            headers=headers)
-        
-        tracks = r.json()['items']
-        
-        for track in tracks:
-            # get audio features (key, liveness, danceability, ...)
-            f = requests.get(BASE_URL + 'audio-features/' + track['id'], 
-                headers=headers)
-            f = f.json()
-            
-            # combine with album info
-            f.update({
-                'track_name': track['name'],
-                'album_name': album_name,
-                'short_album_name': trim_name,
-                'release_date': album['release_date'],
-                'album_id': album['id']
-            })
-            
-            data.append(f)
-    df = pd.DataFrame(data)
-    print(df.head())
+    for i in d['artists']['items']:
+        print(i['name'])
 
     context = {
         "form" : form,
-        "danceability": df['danceability'].mean(),
-        "loudness": df['loudness'].mean(),
-        "energy": df['energy'].mean(),
+        "artists": d['artists']['items'],
     }
 
     return render(request, "artist.html", context)

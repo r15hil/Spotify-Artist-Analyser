@@ -14,10 +14,11 @@ class RawForm(forms.ModelForm):
 
     def clean_id(self, *args, **kwargs):
         clean_id = self.cleaned_data.get("artistID")
-        # if "3" in clean_id: #can do length check etc
-        #     return clean_id
-        # else:
+        # if not "3" in clean_id: #can do length check or query API 
         #     raise forms.ValidationError("Artist not found")
+        # else if ... #for multiple validations
+        # else:
+        #     return clean_id
 
 
 class RawerForm(forms.Form):

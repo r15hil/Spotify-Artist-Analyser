@@ -41,7 +41,6 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     #own apps and third party apps
-    'product',
     'pages',
 ]
 

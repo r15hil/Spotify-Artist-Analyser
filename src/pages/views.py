@@ -2,7 +2,7 @@ from django.http import HttpResponse
 from django.shortcuts import render
 import requests
 import pandas as pd
-from .forms import RawForm
+from .forms import RawForm, RawerForm
 
 CLIENT_ID = 'aac7a18b013842f58bb165716c697add'
 CLIENT_SECRET = '150614d1fbdb425a86238147e6f9e20b'
@@ -60,7 +60,7 @@ def contact_view(request, *args, **kwargs):
 
 
 
-
+#spotify:artist:3Nrfpe0tUJi4K4DXYWgMUX
 def artist_view(request, *args, **kwargs):
 
     form = RawForm(request.POST or None)
@@ -95,7 +95,7 @@ def artist_view(request, *args, **kwargs):
     # pull all artists albums
     r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums', 
                     headers=headers, 
-                    params={'include_groups': 'album', 'limit': 20})
+                    params={'include_groups': 'album', 'limit': 10})
     d = r.json()
 
     for album in d['items']:

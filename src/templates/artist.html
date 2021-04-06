@@ -13,9 +13,14 @@
 <ul>
     {% for artist in artists %}
     <li>{{ artist.name }}</li>
-    <!-- <a href={{ artist.images.2.url }} target="_blank"> -->
-        <img src= {{ artist.images.2.url }} alt={{ artist.name }}>
-    <!-- </a> -->
+    <!-- <a href='?analysis={{ artist.uri }}' action='/artist/analysis' method='POST'> {% csrf_token %}
+        <input type='image' src= {{ artist.images.2.url }}>
+    </a> -->
+    <form action='/analysis/' method='POST'> {% csrf_token %}
+        <input type='image' name='{{ artist.uri }}' src={{ artist.images.2.url }}>
+
+    </form>
+    
     {% endfor %}
 
 </ul>

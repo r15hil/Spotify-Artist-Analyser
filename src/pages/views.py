@@ -95,6 +95,8 @@ def artist_view(request, *args, **kwargs):
     # save the access token
     access_token = auth_response_data['access_token']
 
+    print(access_token)
+
     headers = {
         'Authorization': 'Bearer {token}'.format(token=access_token)
     }
@@ -120,3 +122,30 @@ def artist_view(request, *args, **kwargs):
     }
 
     return render(request, "artist.html", context)
+
+def analysis_view(request, *args, **kwargs):
+
+    form = RawForm(request.POST or None)
+
+    if form.is_valid():
+        form.save()
+        print(form.cleaned_data['artistID'])
+        #artist_id = form.cleaned_data['artistID']
+        artist_id = form.cleaned_data['artistID']
+
+    s_beginning = 'spotify:artist:'
+    s_end = '.x'
+
+    artist_id = list(request.POST.keys())[1]
+
+    artist_id = artist_id.replace(s_beginning,'')
+    artist_id = artist_id.replace(s_end,'')
+
+    print(artist_id)
+
+    context = {
+        "form": form,
+        "artist_id": artist_id
+    }
+
+    return render(request, "analysis.html", context)

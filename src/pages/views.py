@@ -8,6 +8,7 @@ CLIENT_ID = 'aac7a18b013842f58bb165716c697add'
 CLIENT_SECRET = '150614d1fbdb425a86238147e6f9e20b'
 
 AUTH_URL = 'https://accounts.spotify.com/api/token'
+BASE_URL = 'https://api.spotify.com/v1/'
 
 
 # Create your views here.
@@ -54,9 +55,6 @@ def contact_view(request, *args, **kwargs):
         'Authorization': 'Bearer {token}'.format(token=access_token)
     }
 
-    # base URL of all Spotify API endpoints
-    BASE_URL = 'https://api.spotify.com/v1/'
-
     # actual GET request with proper header
     r = requests.get(BASE_URL + 'audio-features/' + track_id, headers=headers)
 
@@ -100,21 +98,16 @@ def artist_view(request, *args, **kwargs):
     headers = {
         'Authorization': 'Bearer {token}'.format(token=access_token)
     }
-
-    # base URL of all Spotify API endpoints
-    BASE_URL = 'https://api.spotify.com/v1/'
     
-    #artist_id = '36QJpDe2go2KgaRleHCDTp'
-    print("before: ", artist_id)
     artist_id = artist_id.replace(" ", "%20")
-    print("after: ", artist_id)
 
     r = requests.get(BASE_URL + 'search?q=/' + artist_id + '&type=artist', 
                     headers=headers, 
                     params={'include_groups': 'artist', 'limit': 5})
     d = r.json()
-    for i in d['artists']['items']:
-        print(i['name'])
+
+    # for i in d['artists']['items']:
+    #     print(i['name'])
 
     context = {
         "form" : form,
@@ -129,7 +122,6 @@ def analysis_view(request, *args, **kwargs):
 
     if form.is_valid():
         form.save()
-        print(form.cleaned_data['artistID'])
         #artist_id = form.cleaned_data['artistID']
         artist_id = form.cleaned_data['artistID']
 
@@ -141,7 +133,59 @@ def analysis_view(request, *args, **kwargs):
     artist_id = artist_id.replace(s_beginning,'')
     artist_id = artist_id.replace(s_end,'')
 
-    print(artist_id)
+    auth_response = requests.post(AUTH_URL, {
+        'grant_type': 'client_credentials',
+        'client_id': CLIENT_ID,
+        'client_secret': CLIENT_SECRET,
+    })
+
+    # convert the response to JSON
+    auth_response_data = auth_response.json()
+
+    # save the access token
+    access_token = auth_response_data['access_token']
+
+    headers = {
+        'Authorization': 'Bearer {token}'.format(token=access_token)
+    }
+
+    r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums?market=US', 
+                headers=headers, 
+                params={'include_groups': 'album', 'limit':5})
+
+    d = r.json()
+
+    data = []   # will hold all track info
+    albums = [] # to keep track of duplicates
+
+    for album in d['items']:
+
+        album_name = album['name']
+
+        trim_name = album_name.split('(')[0].strip()
+        if trim_name.upper() in albums:
+            continue
+        albums.append(trim_name.upper())
+
+        r = requests.get(BASE_URL + 'albums/' + album['id'] + '/tracks?market=US', 
+                    headers=headers)
+        tracks = r.json()['items']
+
+        for track in tracks:
+            # get audio features (key, liveness, danceability, ...)
+            f = requests.get(BASE_URL + 'audio-features/' + track['id'], 
+                headers=headers)
+            f = f.json()
+            data.append(f)
+
+    df = pd.DataFrame(data)
+ 
+    X = (df.filter(['acousticness', 'danceability', 'duration_ms', 'energy',
+            'instrumentalness', 'liveness', 'loudness', 'tempo', 'valence'])
+    )
+
+    print(X['danceability'])
+    print(X['danceability'].mean())
 
     context = {
         "form": form,

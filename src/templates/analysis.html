@@ -12,4 +12,13 @@
 <h1> {{ artist_name }} </h1>
 <p> {{ artist_bio }} </p>
 
+<ul>
+    {% for key, value in features.items %}
+
+    <li>{{ key }} - {{ value }} </li>
+
+    {% endfor %}
+
+</ul>
+
 {% endblock %}

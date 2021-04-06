@@ -192,11 +192,23 @@ def analysis_view(request, *args, **kwargs):
     print(X['danceability'])
     print(X['danceability'].mean())
 
+    features = {
+        'acousticness': X['acousticness'].mean(),
+        'danceability': X['danceability'].mean(),
+        'energy' : X['energy'].mean(),
+        'instrumentalness' : X['instrumentalness'].mean(),
+        'liveness' : X['liveness'].mean(),
+        'loudness' : X['loudness'].mean(),
+        'tempo' : X['tempo'].mean(),
+        'valence' : X['valence'].mean()
+    }
+
     context = {
         "form": form,
         "artist_id": artist_id,
         "artist_name" : artist_name,
         "artist_bio" : artist_bio,
+        "features" : features
     }
 
     return render(request, "analysis.html", context)

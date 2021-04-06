@@ -3,6 +3,7 @@ from django.shortcuts import render
 import requests
 import pandas as pd
 from .forms import RawForm, RawerForm
+import wikipedia
 
 CLIENT_ID = 'aac7a18b013842f58bb165716c697add'
 CLIENT_SECRET = '150614d1fbdb425a86238147e6f9e20b'
@@ -141,13 +142,17 @@ def analysis_view(request, *args, **kwargs):
 
     # convert the response to JSON
     auth_response_data = auth_response.json()
-
     # save the access token
     access_token = auth_response_data['access_token']
 
     headers = {
         'Authorization': 'Bearer {token}'.format(token=access_token)
     }
+
+    artistdata =  requests.get(BASE_URL + 'artists/' + artist_id, headers=headers)
+    artistdata = artistdata.json()
+    artist_name = artistdata['name']
+    artist_bio = wikipedia.WikipediaPage(title = artist_name).summary
 
     r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums?market=US', 
                 headers=headers, 
@@ -189,7 +194,9 @@ def analysis_view(request, *args, **kwargs):
 
     context = {
         "form": form,
-        "artist_id": artist_id
+        "artist_id": artist_id,
+        "artist_name" : artist_name,
+        "artist_bio" : artist_bio,
     }
 
     return render(request, "analysis.html", context)

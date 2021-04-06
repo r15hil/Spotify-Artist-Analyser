@@ -1,0 +1,14 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action= '/artist/' method='POST'> {% csrf_token %}
+    <form>
+        {{ form.as_p }}
+        <input type='submit' value='Search' />
+    </form>
+
+
+<h1> {{ artist_id }} </h1>
+
+{% endblock %}

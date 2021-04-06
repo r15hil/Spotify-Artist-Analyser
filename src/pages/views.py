@@ -149,9 +149,13 @@ def analysis_view(request, *args, **kwargs):
         'Authorization': 'Bearer {token}'.format(token=access_token)
     }
 
-    artistdata =  requests.get(BASE_URL + 'artists/' + artist_id, headers=headers)
-    artistdata = artistdata.json()
-    artist_name = artistdata['name']
+    artist_data =  requests.get(BASE_URL + 'artists/' + artist_id, headers=headers)
+    artist_data = artist_data.json()
+
+    artist_name = artist_data['name']
+    artist_popularity = artist_data['popularity']
+    artist_genres = artist_data['genres']
+    artist_followers = artist_data['followers']['total']
     artist_bio = wikipedia.WikipediaPage(title = artist_name).summary
 
     r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums?market=US', 
@@ -192,11 +196,26 @@ def analysis_view(request, *args, **kwargs):
     print(X['danceability'])
     print(X['danceability'].mean())
 
+    features = {
+        'acousticness': X['acousticness'].mean(),
+        'danceability': X['danceability'].mean(),
+        'energy' : X['energy'].mean(),
+        'instrumentalness' : X['instrumentalness'].mean(),
+        'liveness' : X['liveness'].mean(),
+        'loudness' : X['loudness'].mean(),
+        'tempo' : X['tempo'].mean(),
+        'valence' : X['valence'].mean()
+    }
+
     context = {
         "form": form,
         "artist_id": artist_id,
         "artist_name" : artist_name,
         "artist_bio" : artist_bio,
+        "features" : features,
+        "popularity" : artist_popularity,
+        "genres" : artist_genres,
+        "followers" : artist_followers,
     }
 
     return render(request, "analysis.html", context)

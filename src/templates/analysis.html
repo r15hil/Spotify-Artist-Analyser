@@ -2,15 +2,30 @@
 
 {% block content %}
 
+
 <form action= '/artist/' method='POST'> {% csrf_token %}
     <form>
         {{ form.as_p }}
         <input type='submit' value='Search' />
     </form>
 
+<img src={{ artist_photo }} class="rounded mx-auto d-block">
 
 <h1> {{ artist_name }} </h1>
-<p> {{ artist_bio }} </p>
+
+<p>
+    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        Bio
+    </a>
+</p>
+
+<div class="collapse" id="collapseExample">
+    <div class="card card-body">
+        <p> {{ artist_bio }} </p>
+    </div>
+  </div>
+
+
 
 <ul>
     {% for key, value in features.items %}

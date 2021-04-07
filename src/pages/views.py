@@ -104,7 +104,7 @@ def artist_view(request, *args, **kwargs):
 
     r = requests.get(BASE_URL + 'search?q=/' + artist_id + '&type=artist', 
                     headers=headers, 
-                    params={'include_groups': 'artist', 'limit': 5})
+                    params={'include_groups': 'artist', 'limit': 20})
     d = r.json()
 
     # for i in d['artists']['items']:
@@ -153,6 +153,7 @@ def analysis_view(request, *args, **kwargs):
     artist_data = artist_data.json()
 
     artist_name = artist_data['name']
+    artist_photo = artist_data['images'][2]['url']
     artist_popularity = artist_data['popularity']
     artist_genres = artist_data['genres']
     artist_followers = artist_data['followers']['total']
@@ -185,10 +186,21 @@ def analysis_view(request, *args, **kwargs):
             f = requests.get(BASE_URL + 'audio-features/' + track['id'], 
                 headers=headers)
             f = f.json()
+
+            f.update({
+            'track_name': track['name'],
+            'album_name': album_name,
+            'short_album_name': trim_name,
+            'release_date': album['release_date'],
+            'album_id': album['id']
+            })
+
             data.append(f)
 
     df = pd.DataFrame(data)
- 
+    
+    print(df)
+
     X = (df.filter(['acousticness', 'danceability', 'duration_ms', 'energy',
             'instrumentalness', 'liveness', 'loudness', 'tempo', 'valence'])
     )
@@ -211,6 +223,7 @@ def analysis_view(request, *args, **kwargs):
         "form": form,
         "artist_id": artist_id,
         "artist_name" : artist_name,
+        "artist_photo": artist_photo,
         "artist_bio" : artist_bio,
         "features" : features,
         "popularity" : artist_popularity,

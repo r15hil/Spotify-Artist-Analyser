@@ -17,9 +17,9 @@
         <div class="row">
             {% for artist in artists %}
                 <div class="col-md-4 col-sm-6">
-                    <div class="card text-center text-white bg-success mb-3" style="width: 18rem; height: 18rem;">
+                    <div class="card text-center text-white bg-success mb-3" style="width: 18rem;">
                         <form action='/analysis/' method='POST'> {% csrf_token %}
-                            <input type='image' class="rounded mx-auto d-block" name='{{ artist.uri }}' src={{ artist.images.2.url }}>
+                            <input type='image' class="rounded-circle mx-auto d-block" name='{{ artist.uri }}' src={{ artist.images.2.url }}>
                         </form>
                         <div class="card-body">
                         <h5 class="card-title-center">{{ artist.name }} </h5>

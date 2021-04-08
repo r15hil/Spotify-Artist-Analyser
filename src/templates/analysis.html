@@ -2,7 +2,9 @@
 
 {% block content %}
 
-
+<style>
+    
+</style>
 <form action= '/artist/' method='POST'> {% csrf_token %}
     <form>
         {{ form.as_p }}
@@ -30,7 +32,30 @@
 <ul>
     {% for key, value in features.items %}
 
-    <li>{{ key }} - {{ value }} </li>
+    {% if key != "loudness" and key != "tempo" %}
+
+    <div class="col-12 col-lg-6 mb-4">
+            <div class="card-body">
+                <div class="row align-items-center mb-4">
+                    <div class="col-auto">
+                        <span class="icon icon-md text-purple"><span class="fab fa-bootstrap"></span></span>
+                    </div>
+                    <div class="col">
+                        <div class="progress-wrapper">
+                            <div class="progress-info">
+                                <div class="h6 mb-0">{{ key }}</div>
+                                <div class="small fw-bold text-dark"><span>{{ value }}</span></div>
+                            </div>
+                            <div class="progress mb-0">
+                                <div class="progress-bar bg-purple" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ value }}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    {% endif %}
 
     {% endfor %}
     <li>genres - {{ genres }}  </li>

@@ -9,7 +9,11 @@
         <form action= '/artist/' method='POST'> {% csrf_token %}
             <form>
                 {{ form.as_p }}
-                <input type='submit' value='Search' />
+                <input type='submit' value='Search' id="searchbar" class="form-control" />
+                <label class="form-label" for="searchbar">Search</label>
+                <button type="button" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                </button>
             </form>
 
 

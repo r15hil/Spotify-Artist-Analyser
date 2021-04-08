@@ -209,14 +209,14 @@ def analysis_view(request, *args, **kwargs):
     print(X['danceability'].mean())
 
     features = {
-        'acousticness': X['acousticness'].mean(),
-        'danceability': X['danceability'].mean(),
-        'energy' : X['energy'].mean(),
-        'instrumentalness' : X['instrumentalness'].mean(),
-        'liveness' : X['liveness'].mean(),
+        'acousticness': X['acousticness'].mean()*100,
+        'danceability': X['danceability'].mean()*100,
+        'energy' : X['energy'].mean()*100,
+        'instrumentalness' : X['instrumentalness'].mean()*100,
+        'liveness' : X['liveness'].mean()*100,
         'loudness' : X['loudness'].mean(),
         'tempo' : X['tempo'].mean(),
-        'valence' : X['valence'].mean()
+        'valence' : X['valence'].mean()*100
     }
 
     context = {

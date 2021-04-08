@@ -4,20 +4,18 @@
 
 <h1>Home Page</h1>
 
-<form action= '/artist/' method='POST'> {% csrf_token %}
-    <form>
-        <div class = "input-group mb-3">
-            <div class = "input-group-prepend">
-                <button type='submit' value='Search' class = "btn btn-success">Search</button>
-            </div>
-            {{ form.as_p }}
-        </div>
-       
-        
-    </form>
+<div class="input-group">
+    <div class="form-outline">
+        <form action= '/artist/' method='POST'> {% csrf_token %}
+            <form>
+                {{ form.as_p }}
+                <input type='submit' value='Search' id="searchbar" class="form-control" />
+                <label class="form-label" for="searchbar">Search</label>
+                <button type="button" class="btn btn-primary">
+                    <i class="fas fa-search"></i>
+                </button>
+                
+            </form>
 
-<p>{{ request.user }}</p>
-<p>{{ request.user.is_authenticated }}</p>
-<p>This is a template</p>
 
 {% endblock %}

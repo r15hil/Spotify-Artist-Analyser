@@ -4,10 +4,15 @@ from .models import Artist
 class RawForm(forms.ModelForm):
     artistID       = forms.CharField(label='', widget=forms.TextInput(
                             attrs={
-                                "placeholder": "Search"
+                                "placeholder": "Search",
+                                "size": 50,
+                                'class': 'form-control',
+                                'style': 'margin-bottom: 10px',
+                                'autofocus': True,
+                                'autocomplete': False
                             }
                             
-    ))
+    ), required=False)
     class Meta:
         model = Artist
         fields = ['artistID']

@@ -1,9 +1,11 @@
 from django.http import HttpResponse
+from django.http import JsonResponse
 from django.shortcuts import render
 import requests
 import pandas as pd
 from .forms import RawForm, RawerForm
 import wikipedia
+import random
 
 CLIENT_ID = 'aac7a18b013842f58bb165716c697add'
 CLIENT_SECRET = '150614d1fbdb425a86238147e6f9e20b'
@@ -11,7 +13,20 @@ CLIENT_SECRET = '150614d1fbdb425a86238147e6f9e20b'
 AUTH_URL = 'https://accounts.spotify.com/api/token'
 BASE_URL = 'https://api.spotify.com/v1/'
 
+def RandomColourGen(data):
+    reformateddata = {}
+    for i in data['album_name'].unique():
+        r = random.randint(0,255)
+        g = random.randint(0,255)
+        b = random.randint(0,255)
+        colour = "rgb({}, {}, {})".format(r,g,b)
 
+        tmp = data[data['album_name'] == i]
+
+        reformateddata[i] = [colour, tmp]
+
+    return reformateddata
+        
 # Create your views here.
 
 def home_view(request, *args, **kwargs):
@@ -160,7 +175,7 @@ def analysis_view(request, *args, **kwargs):
 
     r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums?market=US', 
                 headers=headers, 
-                params={'include_groups': 'album', 'limit':5})
+                params={'include_groups': 'album'})
 
     d = r.json()
 
@@ -168,7 +183,7 @@ def analysis_view(request, *args, **kwargs):
     albums = [] # to keep track of duplicates
 
     for album in d['items']:
-
+        
         album_name = album['name']
 
         trim_name = album_name.split('(')[0].strip()
@@ -185,10 +200,22 @@ def analysis_view(request, *args, **kwargs):
             f = requests.get(BASE_URL + 'audio-features/' + track['id'], 
                 headers=headers)
             f = f.json()
-            data.append(f)
 
+            f.update({
+            'track_name': track['name'],
+            'album_name': album_name,
+            'short_album_name': trim_name,
+            'release_date': album['release_date'],
+            'album_id': album['id']
+            })
+
+            data.append(f)
+            
     df = pd.DataFrame(data)
- 
+    
+    reformated_data = RandomColourGen(df)
+
+    print(reformated_data)
     X = (df.filter(['acousticness', 'danceability', 'duration_ms', 'energy',
             'instrumentalness', 'liveness', 'loudness', 'tempo', 'valence'])
     )
@@ -206,7 +233,6 @@ def analysis_view(request, *args, **kwargs):
         'tempo' : X['tempo'].mean(),
         'valence' : X['valence'].mean()
     }
-
     context = {
         "form": form,
         "artist_id": artist_id,
@@ -216,6 +242,9 @@ def analysis_view(request, *args, **kwargs):
         "popularity" : artist_popularity,
         "genres" : artist_genres,
         "followers" : artist_followers,
+        "data" : df,
+        "reformatedData": reformated_data,
     }
 
     return render(request, "analysis.html", context)
+

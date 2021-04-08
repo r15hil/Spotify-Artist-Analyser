@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<form action= '/artist/' method='POST'> {% csrf_token %}
+    <form>
+        {{ form.as_p }}
+        <input type='submit' value='Search' />
+    </form>
+
+
+<h1> {{ artist_name }} </h1>
+<p> {{ artist_bio }} </p>
+
+<ul>
+    {% for key, value in features.items %}
+
+    <li>{{ key }} - {{ value }} </li>
+
+    {% endfor %}
+    <li>genres - {{ genres }}  </li>
+    <li>popularity - {{ popularity }}  </li>
+    <li>followers - {{ followers }}  </li>
+</ul>
+
+{% endblock %}
+
+
+  
+
+
+
+
+
+

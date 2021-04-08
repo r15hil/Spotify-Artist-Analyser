@@ -6,14 +6,8 @@
 
 <form action= '/artist/' method='POST'> {% csrf_token %}
     <form>
-        <div class = "input-group mb-3">
-            <div class = "input-group-prepend">
-                <button type='submit' value='Search' class = "btn btn-success">Search</button>
-            </div>
-            {{ form.as_p }}
-        </div>
-       
-        
+        {{ form.as_p }}
+        <input type='submit' value='Search' />
     </form>
 
 <p>{{ request.user }}</p>

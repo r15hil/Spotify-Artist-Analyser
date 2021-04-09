@@ -2,6 +2,44 @@
 
 {% block content %}
 
+<script>
+    function ShowAndHide() {
+        var x = document.getElementById('spinner');
+        var y = document.getElementById('artists');
+        if (x.style.display == 'none') {
+            x.style.display = 'block';
+        } else {
+            x.style.display = 'none';
+        }
+        if (y.style.display == 'none') {
+            y.style.display = 'block';
+        } else {
+            y.style.display = 'none';
+        }
+    }
+</script>
+
+<style>
+    .container {
+        display: flex;
+        flex-direction: row;
+    }
+    .center {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px;
+    }
+</style>
+
+<DIV ID="spinner" STYLE="display:none">
+    <div class="center">
+        <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status"></div>
+    </div>
+</DIV>
+
+<DIV ID="artists" STYLE="display:block">
 <form action= '.' method='POST'> {% csrf_token %}
     <form>
         {{ form.as_p }}
@@ -10,16 +48,15 @@
 
 
 
-<h1>Artist Page</h1>
-<ul>
-    
-    <div class="container-fluid">
+<h1 style="text-align:center">Artists</h1>
+<ul>   
+    <div class="container">
         <div class="row">
             {% for artist in artists %}
                 <div class="col-md-4 col-sm-6">
                     <div class="card text-center text-white bg-dark mb-3" style="width: 18rem;">
                         <form action='/analysis/' method='POST'> {% csrf_token %}
-                            <input type='image' class="rounded-circle" name='{{ artist.uri }}' src={{ artist.images.2.url }}>
+                            <input onclick="ShowAndHide()" type='image' class="rounded-circle" name='{{ artist.uri }}' src={{ artist.images.2.url }}>
                         </form>
                         <div class="card-body">
                         <h5 class="card-title-center">{{ artist.name }} </h5>
@@ -29,9 +66,7 @@
             {% endfor %}
         </div>
     </div>
-    
-
 </ul>
 
-
+</DIV>
 {% endblock %}

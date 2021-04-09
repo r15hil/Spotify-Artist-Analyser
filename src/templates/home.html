@@ -2,11 +2,31 @@
 
 {% block content %}
 
+<style>
+    .center {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px;
+    }
+    .flex {
+        display: flex;
+        flex-direction: row;
+    }
+    
+</style>
 
-<form action= '/artist/' method='POST'> {% csrf_token %}
-    <form>
-        {{ form.as_p }}
-        <!-- <input type='submit' value='Search'/> -->
-    </form>
+<div class="p-3 mb-2 bg-dark text-white">
+<div class="center">
+    <form action= '/artist/' method='POST'> {% csrf_token %}
+        <form>
+            <div class='flex'>
+                {{ form.as_p }}
+                <!-- <input type='submit' value='Search'/> -->
+            </div>
+        </form>
+</div>
+</div>
 
 {% endblock %}

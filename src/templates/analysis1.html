@@ -2,34 +2,138 @@
 
 {% block content %}
 
+
+
+
+</style>
 <form action= '/artist/' method='POST'> {% csrf_token %}
     <form>
         {{ form.as_p }}
         <input type='submit' value='Search' />
     </form>
 
+<img src={{ artist_photo }} class="rounded mx-auto d-block">
 
 <h1> {{ artist_name }} </h1>
-<p> {{ artist_bio }} </p>
+
+<p>
+    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+        Bio
+    </a>
+</p>
+
+<div class="collapse" id="collapseExample">
+    <div class="card card-body">
+        <p> {{ artist_bio }} </p>
+    </div>
+  </div>
+
+
 
 <ul>
     {% for key, value in features.items %}
 
-    <li>{{ key }} - {{ value }} </li>
+    {% if key != "loudness" and key != "tempo" %}
+
+    <div class="col-12 col-lg-6 mb-4">
+            <div class="card-body">
+                <div class="row align-items-center mb-4">
+                    <div class="col-auto">
+                        <span class="icon icon-md text-purple"><span class="fab fa-bootstrap"></span></span>
+                    </div>
+                    <div class="col">
+                        <div class="progress-wrapper">
+                            <div class="progress-info">
+                                <div class="h6 mb-0">{{ key }}</div>
+                                <div class="small fw-bold text-dark"><span>{{ value }}</span></div>
+                            </div>
+                            <div class="progress mb-0">
+                                <div class="progress-bar bg-purple" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ value }}%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </div>
+
+    {% endif %}
 
     {% endfor %}
     <li>genres - {{ genres }}  </li>
     <li>popularity - {{ popularity }}  </li>
     <li>followers - {{ followers }}  </li>
 </ul>
+<div class = "chartContainer">
+    <canvas id="ChartAnalysis" width="800" height="700"></canvas>
+    <script>
+
+        const data = {{ChartData |safe}};
+        console.log(data);
+        // {
+        // datasets: [{
+        //     label: 'First Dataset',
+        //     data: [{
+        //     x: 20,
+        //     y: 30,
+        //     r: 15
+        //     }, {
+        //     x: 40,
+        //     y: 10,
+        //     r: 10
+        //     }],
+        //     backgroundColor: 'rgb(255, 99, 132)'
+        // },{
+        //     label: 'First Dataset',
+        //     data: [{
+        //     x: 20,
+        //     y: 30,
+        //     r: 15
+        //     }, {
+        //     x: 40,
+        //     y: 10,
+        //     r: 10
+        //     }],
+        //     backgroundColor: 'rgb(255, 99, 132)'
+        // }]
+        // };
+
+        var ctx = document.getElementById('ChartAnalysis');
+
+        
+
+        var myChart = new Chart(ctx, {
+            type: 'bubble',
+            data: data,
+            options: {
+                maintainAspectRatio: false,
+                aspectRatio: 1,
+                responsive:false,
+                plugins: { 
+                    tooltips: {
+                        displayColors: false,
+                        backgroundColor: 'rgb(255,255,255, 0.8)',
+                        titleColor: '#000',
+                        bodyColor: '#000',
+                        // callbacks:{
+                        //     title: function(item,everything){
+                        //         return;
+                        //     },
+                        //     label: function(context){
+                        //         // let valence = item.yLabel;
+                        //         // let danceability = item.xLabel;
+                        //         console.log(context);
+                        //         // let label = ['Valence: ' + valence,  'Danceability: ' + danceability];
+                        //         return 0;
+                        //         // return label;
+                            
+                        //             }
+                        //         }
+                            }
+                        }   
+                    }
+            });
+        </script>
+    </div>
+
 
 {% endblock %}
-
-
-  
-
-
-
-
-
-

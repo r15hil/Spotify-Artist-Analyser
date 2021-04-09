@@ -4,12 +4,56 @@ import requests
 import pandas as pd
 from .forms import RawForm, RawerForm
 import wikipedia
+import random
+import json 
 
 CLIENT_ID = 'aac7a18b013842f58bb165716c697add'
 CLIENT_SECRET = '150614d1fbdb425a86238147e6f9e20b'
 
 AUTH_URL = 'https://accounts.spotify.com/api/token'
 BASE_URL = 'https://api.spotify.com/v1/'
+
+def Chart_Data_Gen(data):
+    ChartData = {}
+    datasets = []
+
+    for album in data['short_album_name'].unique():
+        ## Colour
+        r = random.randint(0,255)
+        g = random.randint(0,255)
+        b = random.randint(0,255)
+        colour = "rgb({}, {}, {}, 0.5)".format(r,g,b)
+        borderColor = "rgb({}, {}, {})".format(r,g,b)
+
+        ## Data
+        data_for_each_album= []
+        tmp_album = data[data['short_album_name'] == album]
+
+        for x, track in tmp_album.iterrows():
+            tmp_track = {
+                'x': round(track['danceability']*100,2),
+                'y': round(track['valence']*100,2),
+                'r': round(track['energy']*25,2),
+            }
+            
+            data_for_each_album.append(tmp_track)
+
+        tmp_datasets = {
+            "label" : album,
+            "data" : data_for_each_album,
+            "backgroundColor": colour,
+            "borderColor" : borderColor,
+            "borderWidth" : 2,
+            "hoverRadius" : -5,
+            
+        }
+        print(tmp_datasets)
+        datasets.append(tmp_datasets)
+    
+    ChartData['datasets'] = datasets
+
+    print(ChartData)
+    return ChartData
 
 
 # Create your views here.
@@ -161,7 +205,7 @@ def analysis_view(request, *args, **kwargs):
 
     r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums?market=US', 
                 headers=headers, 
-                params={'include_groups': 'album', 'limit':5})
+                params={'include_groups': 'album'})
 
     d = r.json()
 
@@ -199,7 +243,9 @@ def analysis_view(request, *args, **kwargs):
 
     df = pd.DataFrame(data)
     
-    print(df)
+    ChartData = Chart_Data_Gen(df)
+    ChartData = json.dumps(ChartData)
+    
 
     X = (df.filter(['acousticness', 'danceability', 'duration_ms', 'energy',
             'instrumentalness', 'liveness', 'loudness', 'tempo', 'valence'])
@@ -229,6 +275,7 @@ def analysis_view(request, *args, **kwargs):
         "popularity" : artist_popularity,
         "genres" : artist_genres,
         "followers" : artist_followers,
+        "ChartData" : ChartData,
     }
 
-    return render(request, "analysis.html", context)
+    return render(request, "analysis1.html", context)

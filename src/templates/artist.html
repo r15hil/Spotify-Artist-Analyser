@@ -24,13 +24,18 @@
         display: flex;
         flex-direction: row;
     }
+    .center {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        padding: 10px;
+    }
 </style>
 
 <DIV ID="spinner" STYLE="display:none">
-    <div class="text-center">
-        <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status">
-
-        </div>
+    <div class="center">
+        <div class="spinner-border" style="width: 3rem; height: 3rem;" role="status"></div>
     </div>
 </DIV>
 

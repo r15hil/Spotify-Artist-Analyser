@@ -5,7 +5,7 @@
 
 
 
-</style>
+
 <form action= '/artist/' method='POST'> {% csrf_token %}
     <form>
         {{ form.as_p }}
@@ -63,39 +63,37 @@
     <li>popularity - {{ popularity }}  </li>
     <li>followers - {{ followers }}  </li>
 </ul>
-<div class = "chartContainer">
+
     <canvas id="ChartAnalysis" width="800" height="700"></canvas>
     <script>
-
+        // DATA
         const data = {{ChartData |safe}};
-        console.log(data);
-        // {
-        // datasets: [{
-        //     label: 'First Dataset',
-        //     data: [{
-        //     x: 20,
-        //     y: 30,
-        //     r: 15
-        //     }, {
-        //     x: 40,
-        //     y: 10,
-        //     r: 10
-        //     }],
-        //     backgroundColor: 'rgb(255, 99, 132)'
-        // },{
-        //     label: 'First Dataset',
-        //     data: [{
-        //     x: 20,
-        //     y: 30,
-        //     r: 15
-        //     }, {
-        //     x: 40,
-        //     y: 10,
-        //     r: 10
-        //     }],
-        //     backgroundColor: 'rgb(255, 99, 132)'
-        // }]
-        // };
+
+        // OPTIONS
+        var options = {
+                responsive:false, 
+                plugins: {
+                    tooltip:{
+                        bodyColor: '#000',
+                        backgroundColor: 'rgba(155, 155, 155, 0.8)',   
+                        displayColors : false,
+
+                        bodySpacing: 5,
+                        callbacks :{
+                            label: function(context,x){
+                                console.log(context);
+                                
+                                const  index = context.datasetIndex;
+                                console.log(index);
+                                
+                                return context.dataset.data.index.track_name;
+                            }
+                        }
+                    }
+                }
+                    };
+        
+        
 
         var ctx = document.getElementById('ChartAnalysis');
 
@@ -104,36 +102,10 @@
         var myChart = new Chart(ctx, {
             type: 'bubble',
             data: data,
-            options: {
-                maintainAspectRatio: false,
-                aspectRatio: 1,
-                responsive:false,
-                plugins: { 
-                    tooltips: {
-                        displayColors: false,
-                        backgroundColor: 'rgb(255,255,255, 0.8)',
-                        titleColor: '#000',
-                        bodyColor: '#000',
-                        // callbacks:{
-                        //     title: function(item,everything){
-                        //         return;
-                        //     },
-                        //     label: function(context){
-                        //         // let valence = item.yLabel;
-                        //         // let danceability = item.xLabel;
-                        //         console.log(context);
-                        //         // let label = ['Valence: ' + valence,  'Danceability: ' + danceability];
-                        //         return 0;
-                        //         // return label;
-                            
-                        //             }
-                        //         }
-                            }
-                        }   
-                    }
+            options: options,
             });
         </script>
-    </div>
+
 
 
 {% endblock %}

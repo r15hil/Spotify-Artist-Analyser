@@ -59,12 +59,20 @@
     {% endif %}
 
     {% endfor %}
+
     <li>genres - {{ genres }}  </li>
     <li>popularity - {{ popularity }}  </li>
     <li>followers - {{ followers }}  </li>
 </ul>
 
     <canvas id="ChartAnalysis" width="800" height="700"></canvas>
+
+    <canvas id="RadarAnalysis" width="400" height="400"></canvas>
+
+    <!-- loading statically not working, maybe something to do with django templates and chart js  -->
+    <!-- {% load static %}
+    <script type="text/javascript" src={% static 'pages/bubble.js' %}></script> -->
+
     <script>
         // DATA
         const data = {{ChartData |safe}};
@@ -97,20 +105,50 @@
                         }
                     }
                 }
-                    };
+            };
         
         
-
         var ctx = document.getElementById('ChartAnalysis');
-
-        
 
         var myChart = new Chart(ctx, {
             type: 'bubble',
             data: data,
             options: options,
             });
+
         </script>
+
+    <script>
+    var ctx = document.getElementById('RadarAnalysis');
+    var myChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Valence'],
+            datasets: [{
+                label: 'Attributes',
+                data:[  {{ features.acousticness }}, 
+                        {{ features.danceability }},
+                        {{ features.energy }},
+                        {{ features.instrumentalness }},
+                        {{ features.liveness }},
+                        {{ features.valence }}
+                    ],      
+                borderColor: [
+                        'rgba(255,99,132,1)',
+                ],    
+                borderWidth: 4
+            }]
+        },
+        options: {
+            responsive: false,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+    </script>
 
 
 

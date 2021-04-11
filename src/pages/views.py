@@ -34,6 +34,7 @@ def Chart_Data_Gen(data):
                 'x': round(track['danceability']*100,2),
                 'y': round(track['valence']*100,2),
                 'r': round(track['energy']*25,2),
+                'track_name': track['track_name'], 
             }
             
             data_for_each_album.append(tmp_track)
@@ -47,7 +48,6 @@ def Chart_Data_Gen(data):
             "hoverRadius" : -5,
             
         }
-        print(tmp_datasets)
         datasets.append(tmp_datasets)
     
     ChartData['datasets'] = datasets

@@ -25,3 +25,4 @@ urlpatterns = [
     path('analysis/', analysis_view, name='analysis_view'),
     path('admin/', admin.site.urls),
 ]
+

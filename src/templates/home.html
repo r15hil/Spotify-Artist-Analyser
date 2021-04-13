@@ -17,7 +17,6 @@
 </style>
 
 <div style ="background-color:#121212;">
-    {% load crispy_forms_tags %}
     <form action= '/artist/' method='POST' > {% csrf_token %}
         <form>
             {{ form | crispy}}

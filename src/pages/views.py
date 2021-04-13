@@ -202,11 +202,10 @@ def analysis_view(request, *args, **kwargs):
     artist_genres = artist_data['genres']
     artist_followers = artist_data['followers']['total']
     artist_bio = wikipedia.WikipediaPage(title = artist_name).summary
-    #artist_bio = "Temp"
 
     r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums?market=US', 
                 headers=headers, 
-                params={'include_groups': 'album', 'limit': 10})
+                params={'include_groups': 'album'})
 
     d = r.json()
 

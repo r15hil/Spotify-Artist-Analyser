@@ -31,6 +31,46 @@
         transform: translate(-50%, -50%);
         padding: 10px;
     }
+
+    .card{
+    border-radius: 4px;
+    background: #171717;
+    font-family: sans-serif;
+    color: white;
+    font-weight: bold;
+    padding: 30px 30px 30px 30px;
+    width: 300px;
+    height: 300px;
+    cursor: pointer;
+    transition: 0.6s;
+    text-align: center;
+}
+
+.card:hover{
+    
+    background: #282828;
+}
+
+
+}
+
+.artistname{
+    font-family: sans-serif;
+    color: white;
+    font-weight: bold;
+
+}
+
+.square{
+    
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+    height: 150px;
+    width: 150px;
+    object-fit: cover;
+    background-size:cover;
+    background-position:center;
+    border-radius:50%;
+}
 </style>
 
 <DIV ID="spinner" STYLE="display:none">
@@ -43,7 +83,6 @@
 <form action= '.' method='POST'> {% csrf_token %}
     <form>
         {{ form.as_p }}
-        <!-- <input type='submit' value='Search' /> -->
     </form>
 
 
@@ -53,15 +92,22 @@
     <div class="container">
         <div class="row">
             {% for artist in artists %}
-                <div class="col-md-4 col-sm-6">
-                    <div class="card text-center text-white bg-dark mb-3" style="width: 18rem;">
+                <div class="col-sm-auto mb-3">
+                    <div class="card" style="width: 13rem;">
                         <form action='/analysis/' method='POST'> {% csrf_token %}
-                            <input onclick="ShowAndHide()" type='image' class="rounded-circle" name='{{ artist.uri }}' src={{ artist.images.2.url }}>
+                            {% if artist.images.0.url == None %}
+                            {% load static %}
+                            <input onclick="ShowAndHide()" type='image' class = 'square' name='{{ artist.uri }}' src={% static 'pages/nopreview.png' %}>
+                            {%  else %}
+                            <input onclick="ShowAndHide()" type='image' class = 'square'name='{{ artist.uri }}' src= '{{ artist.images.0.url }}' >
+                            {% endif %}
                         </form>
+                        
                         <div class="card-body">
-                        <h5 class="card-title-center">{{ artist.name }} </h5>
+                        <h5 class="artistname">{{ artist.name }} </h5>
                         </div>
-                    </div>
+                        </div>
+                    
                 </div>
             {% endfor %}
         </div>

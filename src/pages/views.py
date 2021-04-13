@@ -116,7 +116,7 @@ def contact_view(request, *args, **kwargs):
 
 #spotify:artist:3Nrfpe0tUJi4K4DXYWgMUX
 def artist_view(request, *args, **kwargs):
-
+     
     form = RawForm(request.POST or None)
     if form.is_valid():
         form.save()

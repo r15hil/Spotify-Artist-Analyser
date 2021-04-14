@@ -195,13 +195,20 @@ def analysis_view(request, *args, **kwargs):
 
     artist_data =  requests.get(BASE_URL + 'artists/' + artist_id, headers=headers)
     artist_data = artist_data.json()
+    print(artist_data)
 
     artist_name = artist_data['name']
     artist_photo = artist_data['images'][1]['url']
     artist_popularity = artist_data['popularity']
     artist_genres = artist_data['genres']
     artist_followers = artist_data['followers']['total']
-    artist_bio = wikipedia.WikipediaPage(title = artist_name).summary
+    try:
+        artist_bio = wikipedia.WikipediaPage(title = artist_name).summary
+    except:
+        try:
+            artist_bio = wikipedia.page(title = artist_name+" "+artist_genres[0]).summary
+        except:
+            artist_bio = 'Cannot find bio'
 
     r = requests.get(BASE_URL + 'artists/' + artist_id + '/albums?market=US', 
                 headers=headers, 

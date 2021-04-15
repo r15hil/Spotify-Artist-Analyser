@@ -41,22 +41,18 @@
     <div class="container">
         <div class="row">
             {% for artist in artists %}
+            {% if artist.images.0.url != None %}
                 <div class="col-sm-auto mb-3">
                     <div class="card" style="width: 13rem;">
                         <form action='/analysis/' method='POST'> {% csrf_token %}
-                            {% if artist.images.0.url == None %}
-                            {% load static %}
-                            <input onclick="ShowAndHide()" type='image' class = 'square' name='{{ artist.uri }}' src={% static 'pages/nopreview.png' %}>
-                            {%  else %}
                             <input onclick="ShowAndHide()" type='image' class = 'square'name='{{ artist.uri }}' src= '{{ artist.images.0.url }}' >
-                            {% endif %}
                         </form>               
                         <div class="card-body">
                         <h5 class="artistname">{{ artist.name }} </h5>
                         </div>
                     </div>
-                    
                 </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>

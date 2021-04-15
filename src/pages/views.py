@@ -16,39 +16,41 @@ BASE_URL = 'https://api.spotify.com/v1/'
 def Chart_Data_Gen(data):
     ChartData = {}
     datasets = []
+    try:
+        for album in data['short_album_name'].unique():
+            ## Colour
+            r = random.randint(0,255)
+            g = random.randint(0,255)
+            b = random.randint(0,255)
+            colour = "rgb({}, {}, {}, 0.5)".format(r,g,b)
+            borderColor = "rgb({}, {}, {})".format(r,g,b)
 
-    for album in data['short_album_name'].unique():
-        ## Colour
-        r = random.randint(0,255)
-        g = random.randint(0,255)
-        b = random.randint(0,255)
-        colour = "rgb({}, {}, {}, 0.5)".format(r,g,b)
-        borderColor = "rgb({}, {}, {})".format(r,g,b)
+            ## Data
+            data_for_each_album= []
+            tmp_album = data[data['short_album_name'] == album]
 
-        ## Data
-        data_for_each_album= []
-        tmp_album = data[data['short_album_name'] == album]
+            for x, track in tmp_album.iterrows():
+                tmp_track = {
+                    'x': round(track['danceability']*100,2),
+                    'y': round(track['valence']*100,2),
+                    'r': round(track['energy']*25,2),
+                    'track_name': track['track_name'], 
+                }
+                
+                data_for_each_album.append(tmp_track)
 
-        for x, track in tmp_album.iterrows():
-            tmp_track = {
-                'x': round(track['danceability']*100,2),
-                'y': round(track['valence']*100,2),
-                'r': round(track['energy']*25,2),
-                'track_name': track['track_name'], 
+            tmp_datasets = {
+                "label" : album,
+                "data" : data_for_each_album,
+                "backgroundColor": colour,
+                "borderColor" : borderColor,
+                "borderWidth" : 2,
+                "hoverRadius" : -5,
+                
             }
-            
-            data_for_each_album.append(tmp_track)
-
-        tmp_datasets = {
-            "label" : album,
-            "data" : data_for_each_album,
-            "backgroundColor": colour,
-            "borderColor" : borderColor,
-            "borderWidth" : 2,
-            "hoverRadius" : -5,
-            
-        }
-        datasets.append(tmp_datasets)
+            datasets.append(tmp_datasets)
+    except:
+        print(" ")
 
     ChartData['datasets'] = datasets
 
@@ -207,16 +209,28 @@ def analysis_view(request, *args, **kwargs):
             'instrumentalness', 'liveness', 'loudness', 'tempo', 'valence'])
     )
 
-    features = {
-        'acousticness': X['acousticness'].mean()*100,
-        'danceability': X['danceability'].mean()*100,
-        'energy' : X['energy'].mean()*100,
-        'instrumentalness' : X['instrumentalness'].mean()*100,
-        'liveness' : X['liveness'].mean()*100,
-        'loudness' : X['loudness'].mean(),
-        'tempo' : X['tempo'].mean(),
-        'valence' : X['valence'].mean()*100
-    }
+    try:
+        features = {
+            'acousticness': X['acousticness'].mean()*100,
+            'danceability': X['danceability'].mean()*100,
+            'energy' : X['energy'].mean()*100,
+            'instrumentalness' : X['instrumentalness'].mean()*100,
+            'liveness' : X['liveness'].mean()*100,
+            'loudness' : X['loudness'].mean(),
+            'tempo' : X['tempo'].mean(),
+            'valence' : X['valence'].mean()*100
+        }
+    except:
+        features = {
+            'acousticness': 0,
+            'danceability': 0,
+            'energy' : 0,
+            'instrumentalness' : 0,
+            'liveness' : 0,
+            'loudness' : 0,
+            'tempo' : 0,
+            'valence' : 0
+        } 
 
     context = {
         "form": form,

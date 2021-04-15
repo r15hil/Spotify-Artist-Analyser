@@ -2,66 +2,133 @@
 
 {% block content %}
 
-<style>
-    
-</style>
+<div class="container">
+    <form action= '/artist/' method='POST'> {% csrf_token %}
+        <form>
+            {{ form.as_p }}
+            <!-- <input type='submit' value='Search' /> -->
+        </form>
+</div>
 
-<form action= '/artist/' method='POST'> {% csrf_token %}
-    <form>
-        {{ form.as_p }}
-        <!-- <input type='submit' value='Search' /> -->
-    </form>
-
-<img src={{ artist_photo }} class="rounded mx-auto d-block">
-
-<h1 class="text-center"> {{ artist_name }} </h1>
-
-<p>
-    <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
-        Bio
-    </a>
-</p>
-
-<div class="collapse" id="collapseExample">
-    <div class="card card-body">
-        <p style="color:black"> {{ artist_bio }} </p>
-    </div>
-  </div>
+<div class="container">
 
 
-
-<ul>
-    {% for key, value in features.items %}
-
-    {% if key != "loudness" and key != "tempo" %}
-
-    <div class="col-12 col-lg-6 mb-4">
-            <div class="card-body">
-                <div class="row align-items-center mb-4">
-                    <div class="col-auto">
-                        <span class="icon icon-md text-purple"><span class="fab fa-bootstrap"></span></span>
-                    </div>
-                    <div class="col">
-                        <div class="progress-wrapper">
-                            <div class="progress-info">
-                                <div class="h6 mb-0">{{ key }}</div>
-                                <div class="small fw-bold text-light"><span>{{ value }}%</span></div>
-                            </div>
-                            <div class="progress mb-0">
-                                <div class="progress-bar bg-purple" role="progressbar" aria-valuenow="{{ value }}" aria-valuemin="0" aria-valuemax="100" style="width: {{ value }}%;"></div>
-                            </div>
+    <div class ="row">
+        <div class="col-md-auto">
+            <img src={{ artist_photo }} class="rounded mx-auto d-block">
+            <canvas id="RadarAnalysis" width="400" height="400"></canvas>
+        </div>
+        
+        <div class="col">
+            <h1 style="color:whitesmoke"> {{ artist_name }} 
+                {% for genre in genres %}
+                    <span class="badge rounded-pill bg-secondary">{{ genre }}</span>
+                {% endfor %}
+            </h1>
+            <p> 
+                <div class ="row">
+                    <div class="col-md-auto">
+                        {% if artist_bio != "Cannot find bio" %}
+                        <div class="card card-body">     
+                            <p style="color:black"> {{ artist_bio }} </p>
                         </div>
+                        {% endif %}
                     </div>
+                    <canvas id="ChartAnalysis" width="800" height="700"></canvas>
                 </div>
-            </div>
+            </p>
+        </div>
     </div>
+</div>
 
-    {% endif %}
+    <script>
+        // DATA
+        const data = {{ChartData |safe}};
 
-    {% endfor %}
-    <li>genres - {{ genres }}  </li>
-    <li>popularity - {{ popularity }}  </li>
-    <li>followers - {{ followers }}  </li>
-</ul>
+        // OPTIONS
+        var options = {
+                responsive:true, 
+                plugins: {
+                    tooltip:{
+                        bodyColor: ' 	#191414',
+                        backgroundColor: 'rgba(155, 155, 155, 0.8)',   
+                        displayColors : false,
+                        titleFont: {style: 'bold'},
+                        
+
+                        bodySpacing: 5,
+                        callbacks :{
+                            label: function(context){
+                                
+                                
+                                var index = context.dataIndex;
+                                
+                                return ['Valence:           ' + context.dataset.data[index].y, 'Danceability:   ' + context.dataset.data[index].x, 'Energy:            ' + + context.dataset.data[index].r];
+                            },
+                            title: function(context){
+                                var index = context[0].dataIndex;
+                                  
+                                return context[0].dataset.data[index].track_name
+                            }
+                        }
+                    }
+                }
+            };
+        
+        
+        var ctx = document.getElementById('ChartAnalysis');
+
+        var myChart = new Chart(ctx, {
+            type: 'bubble',
+            data: data,
+            options: options,
+            });
+
+        </script>
+
+    <script>
+
+    var ctx = document.getElementById('RadarAnalysis');
+    var myChart = new Chart(ctx, {
+        type: 'radar',
+        data: {
+            labels: ['Acousticness', 'Danceability', 'Energy', 'Instrumentalness', 'Liveness', 'Valence'],
+            datasets: [{
+                label: 'Attributes',
+                data:[  {{ features.acousticness }}, 
+                        {{ features.danceability }},
+                        {{ features.energy }},
+                        {{ features.instrumentalness }},
+                        {{ features.liveness }},
+                        {{ features.valence }}
+                    ],
+                fill: true,
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',      
+                borderColor: ['rgba(255,99,132,1)',],    
+                borderWidth: 3,
+
+            }]
+        },
+        options: {
+            responsive: false,
+            plugins: {
+                    tooltip:{
+                        bodyColor: ' 	#191414',
+                        backgroundColor: 'rgba(155, 155, 155, 0.8)',   
+                        displayColors : false,
+                        titleFont: {style: 'bold'},
+                    }
+                },
+                elements: {
+                line: {
+                    borderWidth: 5
+                }
+            }
+        }
+    });
+
+    </script>
+
+
 
 {% endblock %}

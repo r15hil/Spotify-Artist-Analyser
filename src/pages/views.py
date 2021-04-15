@@ -230,23 +230,26 @@ def analysis_view(request, *args, **kwargs):
 
         r = requests.get(BASE_URL + 'albums/' + album['id'] + '/tracks?market=US', 
                     headers=headers)
-        tracks = r.json()['items']
+        try: 
+            tracks = r.json()['items']
 
-        for track in tracks:
-            # get audio features (key, liveness, danceability, ...)
-            f = requests.get(BASE_URL + 'audio-features/' + track['id'], 
-                headers=headers)
-            f = f.json()
+            for track in tracks:
+                # get audio features (key, liveness, danceability, ...)
+                f = requests.get(BASE_URL + 'audio-features/' + track['id'], 
+                    headers=headers)
+                f = f.json()
 
-            f.update({
-            'track_name': track['name'],
-            'album_name': album_name,
-            'short_album_name': trim_name,
-            'release_date': album['release_date'],
-            'album_id': album['id']
-            })
+                f.update({
+                'track_name': track['name'],
+                'album_name': album_name,
+                'short_album_name': trim_name,
+                'release_date': album['release_date'],
+                'album_id': album['id']
+                })
 
-            data.append(f)
+                data.append(f)
+        except:
+            continue
 
     df = pd.DataFrame(data)
     

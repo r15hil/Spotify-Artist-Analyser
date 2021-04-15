@@ -101,12 +101,11 @@
                             {%  else %}
                             <input onclick="ShowAndHide()" type='image' class = 'square'name='{{ artist.uri }}' src= '{{ artist.images.0.url }}' >
                             {% endif %}
-                        </form>
-                        
+                        </form>               
                         <div class="card-body">
                         <h5 class="artistname">{{ artist.name }} </h5>
                         </div>
-                        </div>
+                    </div>
                     
                 </div>
             {% endfor %}

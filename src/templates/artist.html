@@ -2,6 +2,9 @@
 
 {% block content %}
 
+{% load static %}
+<link rel="stylesheet" href={% static 'pages/artist.css' %}>
+
 <script>
     function ShowAndHide() {
         var x = document.getElementById('spinner');
@@ -18,60 +21,6 @@
         }
     }
 </script>
-
-<style>
-    .container {
-        display: flex;
-        flex-direction: row;
-    }
-    .center {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        padding: 10px;
-    }
-
-    .card{
-    border-radius: 4px;
-    background: #171717;
-    font-family: sans-serif;
-    color: white;
-    font-weight: bold;
-    padding: 30px 30px 30px 30px;
-    width: 300px;
-    height: 300px;
-    cursor: pointer;
-    transition: 0.6s;
-    text-align: center;
-}
-
-.card:hover{
-    
-    background: #282828;
-}
-
-
-}
-
-.artistname{
-    font-family: sans-serif;
-    color: white;
-    font-weight: bold;
-
-}
-
-.square{
-    
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
-    height: 150px;
-    width: 150px;
-    object-fit: cover;
-    background-size:cover;
-    background-position:center;
-    border-radius:50%;
-}
-</style>
 
 <DIV ID="spinner" STYLE="display:none">
     <div class="center">
@@ -92,22 +41,18 @@
     <div class="container">
         <div class="row">
             {% for artist in artists %}
+            {% if artist.images.0.url != None %}
                 <div class="col-sm-auto mb-3">
                     <div class="card" style="width: 13rem;">
                         <form action='/analysis/' method='POST'> {% csrf_token %}
-                            {% if artist.images.0.url == None %}
-                            {% load static %}
-                            <input onclick="ShowAndHide()" type='image' class = 'square' name='{{ artist.uri }}' src={% static 'pages/nopreview.png' %}>
-                            {%  else %}
                             <input onclick="ShowAndHide()" type='image' class = 'square'name='{{ artist.uri }}' src= '{{ artist.images.0.url }}' >
-                            {% endif %}
                         </form>               
                         <div class="card-body">
                         <h5 class="artistname">{{ artist.name }} </h5>
                         </div>
                     </div>
-                    
                 </div>
+            {% endif %}
             {% endfor %}
         </div>
     </div>

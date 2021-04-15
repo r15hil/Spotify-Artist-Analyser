@@ -52,18 +52,14 @@ def Chart_Data_Gen(data):
     
     ChartData['datasets'] = datasets
 
-    print(ChartData)
     return ChartData
 
-
-# Create your views here.
 
 def home_view(request, *args, **kwargs):
 
     form = RawForm(request.POST or None)
     if form.is_valid():
         form.save()
-        print(form.cleaned_data['artistID'])
         track_id = form.cleaned_data['artistID']
 
     context = {
@@ -72,56 +68,11 @@ def home_view(request, *args, **kwargs):
     
     return render(request, "home.html", context)
 
-
-
-def contact_view(request, *args, **kwargs):
-
-    form = RawForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        print(form.cleaned_data['artistID'])
-        track_id = form.cleaned_data['artistID']
-    else:
-        track_id = '6y0igZArWVi6Iz0rj35c1Y' 
-
-    auth_response = requests.post(AUTH_URL, {
-        'grant_type': 'client_credentials',
-        'client_id': CLIENT_ID,
-        'client_secret': CLIENT_SECRET,
-    })
-
-    # convert the response to JSON
-    auth_response_data = auth_response.json()
-
-    # save the access token
-    access_token = auth_response_data['access_token']
-
-    headers = {
-        'Authorization': 'Bearer {token}'.format(token=access_token)
-    }
-
-    # actual GET request with proper header
-    r = requests.get(BASE_URL + 'audio-features/' + track_id, headers=headers)
-
-    r = r.json()
-    
-    context = {
-        'form' : form,
-        'object': r
-    }
-
-    return render(request, "contact.html", context)
-
-
-
-#spotify:artist:3Nrfpe0tUJi4K4DXYWgMUX
 def artist_view(request, *args, **kwargs):
      
     form = RawForm(request.POST or None)
     if form.is_valid():
         form.save()
-        print(form.cleaned_data['artistID'])
-        #artist_id = form.cleaned_data['artistID']
         artist_id = form.cleaned_data['artistID']
     else:
         artist_id = '36QJpDe2go2KgaRleHCDTp'
@@ -138,8 +89,6 @@ def artist_view(request, *args, **kwargs):
     # save the access token
     access_token = auth_response_data['access_token']
 
-    print(access_token)
-
     headers = {
         'Authorization': 'Bearer {token}'.format(token=access_token)
     }
@@ -150,9 +99,6 @@ def artist_view(request, *args, **kwargs):
                     headers=headers, 
                     params={'include_groups': 'artist', 'limit': 20})
     d = r.json()
-
-    # for i in d['artists']['items']:
-    #     print(i['name'])
 
     context = {
         "form" : form,
@@ -184,9 +130,7 @@ def analysis_view(request, *args, **kwargs):
         'client_secret': CLIENT_SECRET,
     })
 
-    # convert the response to JSON
     auth_response_data = auth_response.json()
-    # save the access token
     access_token = auth_response_data['access_token']
 
     headers = {
@@ -195,7 +139,6 @@ def analysis_view(request, *args, **kwargs):
 
     artist_data =  requests.get(BASE_URL + 'artists/' + artist_id, headers=headers)
     artist_data = artist_data.json()
-    print(artist_data)
 
     artist_name = artist_data['name']
     artist_photo = artist_data['images'][1]['url']
@@ -216,8 +159,8 @@ def analysis_view(request, *args, **kwargs):
 
     d = r.json()
 
-    data = []   # will hold all track info
-    albums = [] # to keep track of duplicates
+    data = []
+    albums = []
 
     for album in d['items']:
 
@@ -234,7 +177,6 @@ def analysis_view(request, *args, **kwargs):
             tracks = r.json()['items']
 
             for track in tracks:
-                # get audio features (key, liveness, danceability, ...)
                 f = requests.get(BASE_URL + 'audio-features/' + track['id'], 
                     headers=headers)
                 f = f.json()
@@ -261,9 +203,6 @@ def analysis_view(request, *args, **kwargs):
             'instrumentalness', 'liveness', 'loudness', 'tempo', 'valence'])
     )
 
-    print(X['danceability'])
-    print(X['danceability'].mean())
-
     features = {
         'acousticness': X['acousticness'].mean()*100,
         'danceability': X['danceability'].mean()*100,
@@ -288,4 +227,4 @@ def analysis_view(request, *args, **kwargs):
         "ChartData" : ChartData,
     }
 
-    return render(request, "analysis1.html", context)
+    return render(request, "analysis.html", context)

@@ -49,7 +49,7 @@ def Chart_Data_Gen(data):
             
         }
         datasets.append(tmp_datasets)
-    
+
     ChartData['datasets'] = datasets
 
     return ChartData
@@ -141,7 +141,11 @@ def analysis_view(request, *args, **kwargs):
     artist_data = artist_data.json()
 
     artist_name = artist_data['name']
-    artist_photo = artist_data['images'][1]['url']
+    try:
+        artist_photo = artist_data['images'][1]['url']
+    except:
+        artist_photo = None
+
     artist_popularity = artist_data['popularity']
     artist_genres = artist_data['genres']
     artist_followers = artist_data['followers']['total']
@@ -174,8 +178,8 @@ def analysis_view(request, *args, **kwargs):
         r = requests.get(BASE_URL + 'albums/' + album['id'] + '/tracks?market=US', 
                     headers=headers)
         try: 
+            
             tracks = r.json()['items']
-
             for track in tracks:
                 f = requests.get(BASE_URL + 'audio-features/' + track['id'], 
                     headers=headers)

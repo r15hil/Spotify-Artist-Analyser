@@ -1,5 +1,5 @@
 # Spotify-Artist-Analyser
-A web application to analyse artists on Spotify.
+A web application to analyse artists on Spotify using the Spotify API, Django, Bootstrap and Chart.js.
 
 ## Set up
 - You will need to use your own Spotify API keys, which can be assigned at the top of _views.py_ as `CLIENT_ID` and `CLIENT_SECRET`.
